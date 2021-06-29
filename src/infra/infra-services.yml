@@ -6,3 +6,12 @@ services:
      ports: 
        - 1025:1025 # smtp server
        - 8025:8025 # web ui
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672" # Message port
+      - "15672:15672" # Web UI
+
+    # volumes:
+    #   - 'rabbitmq_data:/data'
