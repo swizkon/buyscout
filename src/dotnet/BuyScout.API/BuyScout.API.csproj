@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<RootNamespace>BuyScout.API</RootNamespace>
+		<UserSecretsId>f6e0806c-374f-4484-86d5-510b44b2685f</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
