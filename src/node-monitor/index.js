@@ -8,12 +8,17 @@ const API_URL = process.env['BUYSCOUT__API_URL'] || "https://prod-api-url.com";
 console.log('BUYSCOUT__API_URL', API_URL);
 
 var connection = new signalR.HubConnectionBuilder()
- .withUrl(`${API_URL}/hubs/testHub`) // 'http://localhost:5000'
+ .withUrl(`${API_URL}/hubs/testHub`)
  .withAutomaticReconnect()
  .build();
 
-connection.on('Broadcast', function (data) {
+ connection.on('Broadcast', function (data) {
   console.log('Broadcast', data);
+  console.log(arguments);
+ })
+ 
+connection.on('WeatherForecastRequested', function (data) {
+  console.log('WeatherForecastRequested', data);
   console.log(arguments);
  })
  
