@@ -14,9 +14,21 @@ Key features are:
 
 
 ## The tech
- - dotnet 5 API for BFF including SignalR for near real-time
- - dotnet 5 apps for micro-service and message driven PoC
+ - dotnet 5 API for BFF including SignalR for near real-time messaging
+ - dotnet 5 apps for micro-service and message driven PoC ProtoBuf + rabbitmq
  - MS SignalR for 
  - Node JS monitoring app utilizing the SignalR
  - Mailhog fake mail for testing invites / OTP-logins
  - Svelte (TBD) poc front-end app
+
+
+
+
+ ## Runtime
+
+
+
+```
+# Set environment vars and start the node monitor app
+> $env:API_URL = 'http://localhost:5000' ; node .\index.js
+```

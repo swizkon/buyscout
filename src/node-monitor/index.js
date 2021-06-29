@@ -1,29 +1,37 @@
 const signalR = require('@microsoft/signalr');
+
+// To set the API_URL in dev mode use:
+// > $env:BUYSCOUT__API_URL = 'http://localhost:5000' ; node .\index.js
+
+const API_URL = process.env['BUYSCOUT__API_URL'] || "https://prod-api-url.com";
+
+console.log('BUYSCOUT__API_URL', API_URL);
+
 var connection = new signalR.HubConnectionBuilder()
- .withUrl('http://localhost:5000/hubs/testHub')
+ .withUrl(`${API_URL}/hubs/testHub`) // 'http://localhost:5000'
  .withAutomaticReconnect()
  .build();
 
- connection.on('Broadcast', function (data) {
-  console.log(data);
+connection.on('Broadcast', function (data) {
+  console.log('Broadcast', data);
   console.log(arguments);
  })
  
- connection.on('Send', function (data) {
-  console.log(data);
+connection.on('Send', function (data) {
+  console.log('Send', data);
 })
  
- connection.on('doit', function (data) {
-  console.log(data);
+connection.on('doit', function (data) {
+  console.log('doit', data);
 })
 
- async function start() {
+async function start() {
   console.log('start');
   try {
       await connection.start();
       console.log("SignalR Connected.");
   } catch (err) {
-      console.log("SignalR failed..");
+      console.log("SignalR failed. Will retry in 5 secs...");
       console.log(err);
       setTimeout(start, 5000);
   }
