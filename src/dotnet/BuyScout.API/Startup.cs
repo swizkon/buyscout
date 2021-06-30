@@ -34,14 +34,13 @@ namespace BuyScout.API
             
             services.AddSignalR();
 
-            services.AddCors(options => {
-                options.AddPolicy("AllowAll", builder =>
-                {
-                    builder.AllowAnyOrigin();
-                    builder.AllowAnyHeader();
-                    builder.AllowAnyMethod();
-                });
-            });
+            services.AddCors(options => options.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:5000");
+            }));
 
             services.AddHostedService<EmailHostedService>();
 
@@ -60,12 +59,12 @@ namespace BuyScout.API
 
             if(env.IsProduction())
             {
-                app.UseHttpsRedirection();
+                app.UseHttpsRedirection(); 
             }
 
-            app.UseRouting();
-
             app.UseCors("AllowAll");
+
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();

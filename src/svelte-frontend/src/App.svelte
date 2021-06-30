@@ -1,20 +1,48 @@
 <script>
   import { onMount } from "svelte";
-  import { HubConnection, HubConnectionBuilder } from "@aspnet/signalr";
+  import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
   let connection = new HubConnectionBuilder()
-    .withUrl("https://localhost:6001/signalr")
+    .withUrl("https://localhost:6001/hubs/testHub")
+    .withAutomaticReconnect()
     .build();
 
-  connection
-    .start()
-    .then(() => console.log("Connection started!"))
-    .catch(err => console.log("Error while establishing connection :("));
   connection.on("BroadcastMessage", data => {
     game = data.message;
     localGame.push(data.message);
     console.log(localGame);
   });
+  
+connection.on("Broadcast", data => {
+    console.log(data);
+  });
+
+
+  connection.on("SystemHeartbeatEvent", (data, b) => {
+    // game = data.message;
+    // localGame.push(data.message);
+    console.log(data);
+    console.log(b);
+    console.log(arguments)
+  });
+
+  
+  async function start() {
+    try {
+        await connection.start();
+        connection.invoke("Broadcast", "user", "message");
+        console.log(connection.state);
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(connection.state);
+        console.log(err);
+        setTimeout(() => start(), 5000);
+    }
+};
+
+
+
+
   let localGame = [];
   export let name;
   export let game;
@@ -25,6 +53,7 @@
   let messages = [];
 
   onMount(async () => {
+    await start();
     const res = await fetch(`https://localhost:6001/api/celebrations`);
     const dasd = await res.json();
 
@@ -35,6 +64,8 @@
 </script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Open+Sans&display=swap');
+
   main {
     text-align: center;
     padding: 1em;
@@ -47,6 +78,10 @@
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
+  }
+
+  h1,h2 {
+    font-family: 'Bangers';
   }
 
   @media (min-width: 640px) {
