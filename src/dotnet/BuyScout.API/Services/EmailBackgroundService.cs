@@ -2,6 +2,9 @@
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
+//using BuyScout.API.Messaging;
+using BuyScout.Contracts;
+using MassTransit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -11,14 +14,17 @@ namespace BuyScout.API.Services
     {
         private static readonly TimeSpan Interval = TimeSpan.FromSeconds(5);
 
+        private readonly IBus _bus;
         private readonly ILogger<EmailHostedService> _logger;
 
         private Task _processingTask;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public EmailHostedService(
+            IBus bus,
             ILogger<EmailHostedService> logger)
         {
+            _bus = bus;
             _logger = logger;
         }
 
@@ -52,6 +58,24 @@ namespace BuyScout.API.Services
                     await Task.Delay(Interval, cancellationToken);
 
                     _logger.LogInformation("{Service} ProcessEmail", GetType().Name);
+
+                    await _bus.Publish(new SystemTickEvent(), context =>
+                    {
+                        context.CorrelationId = Guid.NewGuid();
+                        // context.
+                    }, cancellationToken);
+
+
+                    await _bus.Publish(new SystemHeartbeatEvent
+                    {
+                        Name = typeof(Startup).Namespace,
+                        UtcTimestamp = DateTime.UtcNow
+                    }, context =>
+                    {
+                        context.CorrelationId = Guid.NewGuid();
+                        // context.
+                    }, cancellationToken);
+
                     //using var message = new MailMessage(
                     //    from: "noreply@buyscout.net", 
                     //    to: "user@domain.com",

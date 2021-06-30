@@ -1,11 +1,16 @@
+using System;
 using System.Threading.Tasks;
-using BuyScout.Service.Services;
+using BuyScout.Contracts;
+using GreenPipes;
+using MassTransit;
+using MassTransit.Definition;
+using MassTransit.Topology.EntityNameFormatters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace BuyScout.Service
@@ -25,12 +30,13 @@ namespace BuyScout.Service
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BuyScout API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BuyScout API", Version = "v1"});
             });
-            
+
             services.AddSignalR();
 
-            services.AddCors(options => {
+            services.AddCors(options =>
+            {
                 options.AddPolicy("AllowAll", builder =>
                 {
                     builder.AllowAnyOrigin();
@@ -39,7 +45,7 @@ namespace BuyScout.Service
                 });
             });
 
-            services.AddHostedService<EmailHostedService>();
+            AddMessageBrokerConfiguration(services, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,7 +58,7 @@ namespace BuyScout.Service
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BuyScout API v1"));
             }
 
-            if(env.IsProduction())
+            if (env.IsProduction())
             {
                 app.UseHttpsRedirection();
             }
@@ -66,37 +72,60 @@ namespace BuyScout.Service
 
             app.UseWebSockets();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private static void AddMessageBrokerConfiguration(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
             {
-                endpoints.MapControllers();
-                //endpoints.MapHub<TestHub>("/hubs/testHub");
+                x.AddConsumersFromNamespaceContaining<BlaBlaSomeHandler>();
+
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("", configurator =>
+                    {
+                        configurator.Password("guest");
+                        configurator.Password("guest");
+                    });
+
+                    cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(Environment.MachineName, false));
+                    cfg.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2)));
+                    cfg.UseInMemoryOutbox();
+                });
             });
+
+            services.AddMassTransitHostedService(waitUntilStarted: true);
         }
     }
 
-    //public interface ITestHubClient
-    //{
-    //    Task ReceiveMessage(string user, string message);
+    public class BlaBlaSomeHandler :
+        IConsumer<AddItemToListCommand>,
+        IConsumer<SystemTickEvent>
+    {
+        private readonly ILogger<BlaBlaSomeHandler> _logger;
 
-    //    Task Broadcast(string user, string message);
-    //}
+        public BlaBlaSomeHandler(ILogger<BlaBlaSomeHandler> logger)
+        {
+            _logger = logger;
+        }
 
-    //public class TestHub : Hub<ITestHubClient>
-    //{
-    //    public async Task SendMessage(string user, string message)
-    //    {
-    //        await Clients.All.ReceiveMessage(user, message);
-    //    }
+        public Task Consume(ConsumeContext<AddItemToListCommand> context)
+        {
+            var message = context.Message;
+            _logger.LogInformation("{MessageType} Title {Title}", message.GetType().Name, message.Title);
+            return Task.CompletedTask;
+        }
 
-    //    public async Task Broadcast(string user, string message)
-    //    {
-    //        await Clients.All.Broadcast(user, message);
-    //    }
+        public Task Consume(ConsumeContext<SystemTickEvent> context)
+        {
+            var message = context.Message;
 
-    //    public override async Task OnConnectedAsync()
-    //    {
-    //        await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");
-    //        await base.OnConnectedAsync();
-    //    }
-    //}
+            _logger.LogInformation("{MessageType}:{CorrelationId} at {Timestamp}", message.GetType().Name,
+                context.CorrelationId, message.UtcTimestamp);
+            return Task.CompletedTask;
+        }
+    }
 }

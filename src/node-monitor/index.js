@@ -1,7 +1,7 @@
 const signalR = require('@microsoft/signalr');
 
 // To set the API_URL in dev mode use:
-// > $env:BUYSCOUT__API_URL = 'http://localhost:5000' ; node .\index.js
+// > $env:BUYSCOUT__API_URL = 'http://localhost:5000' ; nodemon .\index.js
 
 const API_URL = process.env['BUYSCOUT__API_URL'] || "https://prod-api-url.com";
 
@@ -12,20 +12,25 @@ var connection = new signalR.HubConnectionBuilder()
  .withAutomaticReconnect()
  .build();
 
- connection.on('Broadcast', function (data) {
+connection.on('SystemHeartbeatEvent', function (data) {
+  console.log('SystemHeartbeatEvent', data);
+  console.log(arguments);
+})
+
+connection.on('Broadcast', function (data) {
   console.log('Broadcast', data);
   console.log(arguments);
- })
- 
+})
+
 connection.on('WeatherForecastRequested', function (data) {
   console.log('WeatherForecastRequested', data);
   console.log(arguments);
- })
- 
+})
+
 connection.on('Send', function (data) {
   console.log('Send', data);
 })
- 
+
 connection.on('doit', function (data) {
   console.log('doit', data);
 })

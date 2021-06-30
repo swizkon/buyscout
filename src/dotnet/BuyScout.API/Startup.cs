@@ -1,14 +1,16 @@
-using System.Threading.Tasks;
+using System;
+using BuyScout.API.Messaging.Handlers;
+//using BuyScout.API.Messaging.Handlers;
 using BuyScout.API.Services;
+using GreenPipes;
+using MassTransit;
+using MassTransit.Definition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Serilog;
 
 namespace BuyScout.API
 {
@@ -42,6 +44,8 @@ namespace BuyScout.API
             });
 
             services.AddHostedService<EmailHostedService>();
+
+            AddMessageBrokerConfiguration(services, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,31 +78,33 @@ namespace BuyScout.API
                 endpoints.MapHub<TestHub>("/hubs/testHub");
             });
         }
-    }
 
-    public interface ITestHubClient
-    {
-        Task ReceiveMessage(string user, string message);
 
-        Task Broadcast(string user, string message);
-    }
-
-    public class TestHub : Hub<ITestHubClient>
-    {
-        public async Task SendMessage(string user, string message)
+        private static void AddMessageBrokerConfiguration(IServiceCollection services, IConfiguration configuration)
         {
-            await Clients.All.ReceiveMessage(user, message);
-        }
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumersFromNamespaceContaining<SomeHandler>();
 
-        public async Task Broadcast(string user, string message)
-        {
-            await Clients.All.Broadcast(user, message);
-        }
+                x.SetKebabCaseEndpointNameFormatter();
+                
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("", configurator =>
+                    {
+                        configurator.Password("guest");
+                        configurator.Password("guest");
+                    });
 
-        public override async Task OnConnectedAsync()
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");
-            await base.OnConnectedAsync();
+                    cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(Environment.MachineName, false));
+                    cfg.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2)));
+                    cfg.UseInMemoryOutbox();
+
+                    // cfg.MessageTopology.SetEntityNameFormatter(new PrefixEntityNameFormatter(cfg.MessageTopology.EntityNameFormatter, Environment.MachineName + typeof(Startup).Namespace));
+                });
+            });
+
+            services.AddMassTransitHostedService(waitUntilStarted: true);
         }
     }
 }

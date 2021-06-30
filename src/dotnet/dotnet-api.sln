@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuyScout.API", "BuyScout.AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuyScout.Service", "BuyScout.Service\BuyScout.Service.csproj", "{C835D391-AAC8-48C6-8DA7-4CF04A85E973}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuyScout.Contracts", "BuyScout.Contracts\BuyScout.Contracts.csproj", "{37B073E5-5055-49D9-984D-B4A04F2D4322}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C835D391-AAC8-48C6-8DA7-4CF04A85E973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C835D391-AAC8-48C6-8DA7-4CF04A85E973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C835D391-AAC8-48C6-8DA7-4CF04A85E973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37B073E5-5055-49D9-984D-B4A04F2D4322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37B073E5-5055-49D9-984D-B4A04F2D4322}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37B073E5-5055-49D9-984D-B4A04F2D4322}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37B073E5-5055-49D9-984D-B4A04F2D4322}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
