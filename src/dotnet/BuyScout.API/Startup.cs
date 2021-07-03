@@ -41,7 +41,10 @@ namespace BuyScout.API
                 builder.AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
-                    .WithOrigins("http://localhost:5000");
+                    .WithOrigins(
+                        "http://localhost:5000", 
+                        "http://localhost:6000", 
+                        "https://localhost:6001");
             }));
 
             // services.AddHostedService<EmailHostedService>();

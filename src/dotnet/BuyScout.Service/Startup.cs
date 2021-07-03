@@ -1,7 +1,5 @@
 using System;
-using System.Threading.Tasks;
 using BuyScout.Common.Persistence;
-using BuyScout.Contracts;
 using BuyScout.Domain.Interfaces;
 using GreenPipes;
 using MassTransit;
@@ -12,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace BuyScout.Service
@@ -102,34 +99,6 @@ namespace BuyScout.Service
             });
 
             services.AddMassTransitHostedService(waitUntilStarted: true);
-        }
-    }
-
-    public class BlaBlaSomeHandler :
-        IConsumer<AddItemToListCommand>,
-        IConsumer<SystemTickEvent>
-    {
-        private readonly ILogger<BlaBlaSomeHandler> _logger;
-
-        public BlaBlaSomeHandler(ILogger<BlaBlaSomeHandler> logger)
-        {
-            _logger = logger;
-        }
-
-        public Task Consume(ConsumeContext<AddItemToListCommand> context)
-        {
-            var message = context.Message;
-            _logger.LogInformation("{MessageType} Title {Title}", message.GetType().Name, message.Title);
-            return Task.CompletedTask;
-        }
-
-        public Task Consume(ConsumeContext<SystemTickEvent> context)
-        {
-            var message = context.Message;
-
-            _logger.LogInformation("{MessageType}:{CorrelationId} at {Timestamp}", message.GetType().Name,
-                context.CorrelationId, message.UtcTimestamp);
-            return Task.CompletedTask;
         }
     }
 }

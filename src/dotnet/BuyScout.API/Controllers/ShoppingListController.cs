@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BuyScout.Domain.Interfaces;
 using BuyScout.Domain.Model;
@@ -33,14 +32,28 @@ namespace BuyScout.API.Controllers
         {
             _logger.LogInformation("Called Get at {Timestamp}", DateTime.Now);
 
-            await _hubContext.Clients.All.SendCoreAsync("Broadcast", new []
+            await _hubContext.Clients.All.SendCoreAsync("Broadcast", new[]
             {
-                "WeatherForecast",
+                "ShoppingList",
                 $"Called Get at {DateTime.Now}"
             });
 
             var result = await _repository.QueryAsync<ShoppingList>(x => true);
             return result;
+        }
+
+        [HttpPost("{listId}")]
+        public async Task<IActionResult> AddItem(
+            [FromRoute] string listId,
+            [FromBody] string title)
+        {
+            await _hubContext.Clients.All.SendCoreAsync("AddItem", new[]
+            {
+                listId,
+                title,
+                $"Called Get at {DateTime.Now}"
+            });
+            return Ok();
         }
     }
 }

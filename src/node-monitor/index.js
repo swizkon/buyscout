@@ -26,8 +26,8 @@ connection.on('Send', function (data) {
   console.log('Send', data);
 })
 
-connection.on('doit', function (data) {
-  console.log('doit', data);
+connection.on('AddItem', function (data) {
+  console.log('AddItem', data, arguments);
 })
 
 async function start() {

@@ -1,5 +1,7 @@
 <script>
   import { onMount } from "svelte";
+	import { fade, fly } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
   import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
   let connection = new HubConnectionBuilder()
@@ -13,19 +15,26 @@
     console.log(localGame);
   });
   
-connection.on("Broadcast", data => {
-    console.log(data);
+connection.on("Broadcast", (data, b, c) => {
+    nextUp = {
+      title: data,
+      description: b,
+      nextOccurrence: c
+    }
   });
 
-
-  connection.on("SystemHeartbeatEvent", (data, b) => {
-    // game = data.message;
-    // localGame.push(data.message);
-    console.log(data);
-    console.log(b);
-    console.log(arguments)
+  connection.on("AddItem", (list, title, timestamp) => {
+    nextUp = {
+      title: title,
+      description: list,
+      nextOccurrence: timestamp
+    }
+    celebrations = [nextUp, ...celebrations]; // [nextUp].concat(celebrations);
   });
 
+  const remove = i => {
+		celebrations = [...celebrations.slice(0, i), ...celebrations.slice(i + 1)];
+	};
   
   async function start() {
     try {
@@ -40,17 +49,12 @@ connection.on("Broadcast", data => {
     }
 };
 
-
-
-
   let localGame = [];
   export let name;
   export let game;
 
   let celebrations = [];
   let nextUp;
-
-  let messages = [];
 
   onMount(async () => {
     await start();
@@ -109,18 +113,13 @@ connection.on("Broadcast", data => {
 
   <div>
     <ul>
-      {#each celebrations as celebration}
-        <li>
-          {celebration.title} {celebration.description}
-          {celebration.nextOccurrence}
+      {#each celebrations as c, i (c)}
+        <li animate:flip in:fade out:fly={{x:100}}>
+          {c.title} {c.description}
+          {c.nextOccurrence}
+          <button on:click="{() => remove(i)}">remove</button>
         </li>
       {/each}
     </ul>
   </div>
-
-  <p style="display:none;">
-    Visit the
-    <a href="https://svelte.dev/tutorial">Svelte tutorial</a>
-    to learn how to build Svelte apps.
-  </p>
 </main>
