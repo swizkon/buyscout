@@ -20,7 +20,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BuyScout.Common\BuyScout.Common.csproj" />
 	  <ProjectReference Include="..\BuyScout.Contracts\BuyScout.Contracts.csproj" />
+	  <ProjectReference Include="..\BuyScout.Domain\BuyScout.Domain.csproj" />
 	</ItemGroup>
 
 </Project>

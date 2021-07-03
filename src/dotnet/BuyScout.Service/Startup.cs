@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using BuyScout.Common.Persistence;
 using BuyScout.Contracts;
+using BuyScout.Domain.Interfaces;
 using GreenPipes;
 using MassTransit;
 using MassTransit.Definition;
@@ -44,6 +46,8 @@ namespace BuyScout.Service
                     builder.AllowAnyMethod();
                 });
             });
+
+            services.AddScoped<IRepository, MongoRepository>();
 
             AddMessageBrokerConfiguration(services, Configuration);
         }

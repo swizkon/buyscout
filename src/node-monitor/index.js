@@ -22,11 +22,6 @@ connection.on('Broadcast', function (data) {
   console.log(arguments);
 })
 
-connection.on('WeatherForecastRequested', function (data) {
-  console.log('WeatherForecastRequested', data);
-  console.log(arguments);
-})
-
 connection.on('Send', function (data) {
   console.log('Send', data);
 })

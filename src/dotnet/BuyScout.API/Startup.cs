@@ -2,6 +2,8 @@ using System;
 using BuyScout.API.Messaging.Handlers;
 //using BuyScout.API.Messaging.Handlers;
 using BuyScout.API.Services;
+using BuyScout.Common.Persistence;
+using BuyScout.Domain.Interfaces;
 using GreenPipes;
 using MassTransit;
 using MassTransit.Definition;
@@ -42,7 +44,11 @@ namespace BuyScout.API
                     .WithOrigins("http://localhost:5000");
             }));
 
-            services.AddHostedService<EmailHostedService>();
+            // services.AddHostedService<EmailHostedService>();
+
+            services.Configure<DatabaseConfiguration>(Configuration.GetSection(nameof(DatabaseConfiguration)));
+
+            services.AddScoped<IRepository, MongoRepository>();
 
             AddMessageBrokerConfiguration(services, Configuration);
         }
