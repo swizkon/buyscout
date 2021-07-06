@@ -3,7 +3,7 @@ using BuyScout.Contracts;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace BuyScout.Service
+namespace BuyScout.Processors
 {
     public class BlaBlaSomeHandler :
         IConsumer<AddItemToListCommand>,

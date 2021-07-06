@@ -2,8 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
-		<RootNamespace>BuyScout.Service</RootNamespace>
-		<UserSecretsId>66e4a6a0-0a38-4f75-8bd2-26ce7712e3e0</UserSecretsId>
+		<RootNamespace>BuyScout.Processors</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,9 +19,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\BuyScout.Common\BuyScout.Common.csproj" />
-	  <ProjectReference Include="..\BuyScout.Contracts\BuyScout.Contracts.csproj" />
-	  <ProjectReference Include="..\BuyScout.Domain\BuyScout.Domain.csproj" />
+		<ProjectReference Include="..\BuyScout.Common\BuyScout.Common.csproj" />
+		<ProjectReference Include="..\BuyScout.Contracts\BuyScout.Contracts.csproj" />
+		<ProjectReference Include="..\BuyScout.Domain\BuyScout.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

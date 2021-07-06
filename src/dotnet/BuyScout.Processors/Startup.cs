@@ -4,7 +4,6 @@ using BuyScout.Domain.Interfaces;
 using GreenPipes;
 using MassTransit;
 using MassTransit.Definition;
-using MassTransit.Topology.EntityNameFormatters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-namespace BuyScout.Service
+namespace BuyScout.Processors
 {
     public class Startup
     {

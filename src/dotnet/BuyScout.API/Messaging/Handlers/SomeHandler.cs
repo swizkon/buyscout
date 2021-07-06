@@ -33,8 +33,6 @@ namespace BuyScout.API.Messaging.Handlers
         public Task Consume(ConsumeContext<SystemTickEvent> context)
         {
             var message = context.Message;
-            // throw new System.NotImplementedException();
-
             _logger.LogInformation("{MessageType}:{CorrelationId} at {Timestamp}", message.GetType().Name, context.CorrelationId, message.UtcTimestamp);
             return Task.CompletedTask;
         }
@@ -46,8 +44,6 @@ namespace BuyScout.API.Messaging.Handlers
                 context.Message.Name,
                 context.Message.UtcTimestamp.ToString(CultureInfo.InvariantCulture)
             });
-            //await _hubContext.Clients.All.SendCoreAsync("")
-            // throw new System.NotImplementedException();
         }
     }
 }

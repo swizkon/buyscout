@@ -35,7 +35,7 @@ namespace BuyScout.API.Controllers
             await _hubContext.Clients.All.SendCoreAsync("Broadcast", new[]
             {
                 "ShoppingList",
-                $"Called Get at {DateTime.Now}"
+                $"Called at {DateTime.Now}"
             });
 
             var result = await _repository.QueryAsync<ShoppingList>(x => true);
@@ -51,7 +51,23 @@ namespace BuyScout.API.Controllers
             {
                 listId,
                 title,
-                $"Called Get at {DateTime.Now}"
+                $"Called at {DateTime.Now}"
+            });
+            return Ok();
+        }
+
+        [HttpDelete("{listId}/{itemId}/{reason}")]
+        public async Task<IActionResult> RemoveItem(
+            [FromRoute] string listId,
+            [FromRoute] string itemId,
+            [FromRoute] string reason)
+        {
+            await _hubContext.Clients.All.SendCoreAsync("RemoveItem", new[]
+            {
+                listId,
+                itemId,
+                reason,
+                $"Called at {DateTime.Now}"
             });
             return Ok();
         }
