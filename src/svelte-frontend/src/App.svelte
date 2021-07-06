@@ -4,8 +4,12 @@
 	import { flip } from 'svelte/animate';
   import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
+	import Toast from './Toast.svelte';
+
+  const baseUrl = 'https://localhost:6001'
+
   let connection = new HubConnectionBuilder()
-    .withUrl("https://localhost:6001/hubs/testHub")
+    .withUrl(`${baseUrl}/hubs/testHub`)
     .withAutomaticReconnect()
     .build();
 
@@ -23,17 +27,26 @@ connection.on("Broadcast", (data, b, c) => {
     }
   });
 
-  connection.on("AddItem", (list, title, timestamp) => {
+  connection.on("AddItem", (list, title, itemId, timestamp) => {
     nextUp = {
       title: title,
       description: list,
-      nextOccurrence: timestamp
+      nextOccurrence: timestamp,
+      itemId: itemId
     }
-    celebrations = [nextUp, ...celebrations]; // [nextUp].concat(celebrations);
+    celebrations = [nextUp, ...celebrations];
+
+    window.pushToast(`Added ${title} (${itemId})`)
+  });
+  
+  connection.on("RemoveItem", (list, itemId, reason, timestamp) => {
+    celebrations = celebrations.filter(c => c.itemId !== itemId);
+    window.pushToast(`Removed ${list} - ${itemId}`)
   });
 
   const remove = i => {
-		celebrations = [...celebrations.slice(0, i), ...celebrations.slice(i + 1)];
+    var item = celebrations[i];
+    removeItem(item.itemId);
 	};
   
   async function start() {
@@ -47,24 +60,34 @@ connection.on("Broadcast", (data, b, c) => {
         console.log(err);
         setTimeout(() => start(), 5000);
     }
-};
+  };
 
   let localGame = [];
-  export let name;
   export let game;
+
+  let listId = 'jerndin'
+	let itemTitle = 'qux'
 
   let celebrations = [];
   let nextUp;
 
   onMount(async () => {
     await start();
-    const res = await fetch(`https://localhost:6001/api/celebrations`);
-    const dasd = await res.json();
-
-    celebrations = dasd;
-    nextUp = celebrations.shift();
-    name = dasd[0].title;
   });
+
+	async function addItem () {
+		const res = await fetch(`${baseUrl}/shoppingList/${listId}`, {
+			method: 'POST',
+			body: "\"" + itemTitle + "\"",
+      headers: {'Content-Type': 'application/json'}
+		})
+	}
+
+  async function removeItem (itemId) {
+    const res = await fetch(`${baseUrl}/shoppingList/${listId}/${itemId}/reason`, {
+      method: 'DELETE'
+    })
+  }
 </script>
 
 <style>
@@ -122,4 +145,12 @@ connection.on("Broadcast", (data, b, c) => {
       {/each}
     </ul>
   </div>
+
+<input bind:value={listId} />
+<input bind:value={itemTitle} />
+<button type="button" on:click={addItem}>
+	Add it.
+</button>
+  
+  <Toast />
 </main>
