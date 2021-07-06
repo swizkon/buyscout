@@ -51,6 +51,7 @@ namespace BuyScout.API.Controllers
             {
                 listId,
                 title,
+                Guid.NewGuid().ToString(),
                 $"Called at {DateTime.Now}"
             });
             return Ok();

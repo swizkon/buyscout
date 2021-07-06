@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<RootNamespace>BuyScout.Processors</RootNamespace>
+		<UserSecretsId>a00d53c4-a04b-4345-b881-fc1347de8cee</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
