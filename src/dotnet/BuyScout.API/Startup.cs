@@ -1,7 +1,5 @@
 using System;
 using BuyScout.API.Messaging.Handlers;
-//using BuyScout.API.Messaging.Handlers;
-using BuyScout.API.Services;
 using BuyScout.Common.Persistence;
 using BuyScout.Domain.Interfaces;
 using GreenPipes;
@@ -66,6 +64,10 @@ namespace BuyScout.API
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BuyScout API v1"));
+                app.UseReDoc(options =>
+                {
+                    options.RoutePrefix = "redoc";
+                });
             }
 
             if(env.IsProduction())
