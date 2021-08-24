@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BuyScout.Contracts;
 using BuyScout.Domain.Interfaces;
 using BuyScout.Domain.Model;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -15,15 +17,18 @@ namespace BuyScout.API.Controllers
     {
         private readonly IRepository _repository;
         private readonly IHubContext<TestHub> _hubContext;
+        private readonly IBus _bus;
         private readonly ILogger<ShoppingListController> _logger; 
 
         public ShoppingListController(
             IRepository repository,
             IHubContext<TestHub> hubContext,
+            IBus bus,
             ILogger<ShoppingListController> logger)
         {
             _repository = repository;
             _hubContext = hubContext;
+            _bus = bus;
             _logger = logger;
         }
 
@@ -54,6 +59,17 @@ namespace BuyScout.API.Controllers
                 Guid.NewGuid().ToString(),
                 $"Called at {DateTime.Now}"
             });
+
+            foreach (var c in title.ToCharArray())
+            {
+                await _bus.Publish(new AddItemToListCommand
+                {
+                    ListId = listId,
+                    Title = c.ToString(),
+                    Description = "Description"
+                });
+            }
+
             return Ok();
         }
 

@@ -30,6 +30,10 @@ connection.on('AddItem', function (data) {
   console.log('AddItem', data, arguments);
 })
 
+connection.on('RemoveItem', function (data) {
+  console.log('RemoveItem', data, arguments);
+})
+
 async function start() {
   console.log('start');
   try {
