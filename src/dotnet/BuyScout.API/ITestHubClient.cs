@@ -7,5 +7,7 @@ namespace BuyScout.API
         Task ReceiveMessage(string user, string message);
 
         Task Broadcast(string user, string message);
+
+        Task PlayerPosition(string player, int x, int y);
     }
 }

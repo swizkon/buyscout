@@ -15,6 +15,11 @@ namespace BuyScout.API
             await Clients.All.Broadcast(user, message);
         }
 
+        public async Task PlayerPosition(string player, int x, int y)
+        {
+            await Clients.All.PlayerPosition(player, x, y);
+        }
+        
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");

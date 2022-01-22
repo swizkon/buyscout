@@ -40,6 +40,7 @@ namespace BuyScout.API
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .WithOrigins(
+                        "http://localhost:3000", 
                         "http://localhost:5000", 
                         "http://localhost:6000", 
                         "https://localhost:6001", 

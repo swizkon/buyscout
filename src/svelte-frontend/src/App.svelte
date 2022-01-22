@@ -44,6 +44,11 @@ connection.on("Broadcast", (data, b, c) => {
     window.pushToast(`Removed ${list} - ${itemId}`)
   });
 
+  connection.on("Broadcast", (list, itemId, reason, timestamp) => {
+    celebrations = celebrations.filter(c => c.itemId !== itemId);
+    window.pushToast(`Removed ${list} - ${itemId}`)
+  });
+
   const remove = i => {
     var item = celebrations[i];
     removeItem(item.itemId);
@@ -52,7 +57,7 @@ connection.on("Broadcast", (data, b, c) => {
   async function start() {
     try {
         await connection.start();
-        connection.invoke("Broadcast", "user", "message");
+        connection.send("Broadcast", "user", "message");
         console.log(connection.state);
         console.log("SignalR Connected.");
     } catch (err) {
@@ -65,11 +70,26 @@ connection.on("Broadcast", (data, b, c) => {
   let localGame = [];
   export let game;
 
-  let listId = 'jerndin'
+  let listId = 'jonas'
 	let itemTitle = 'qux'
 
   let celebrations = [];
   let nextUp;
+
+  let gamePos = {
+    'player1':  {x:0,y:0},
+    'player2':  {x:0,y:0}
+  };
+
+	function handleMousemove(event) {
+    const player = event.target.dataset.player;
+    const {clientX, clientY} = event;    
+
+		gamePos[player].x = clientX - event.target.offsetLeft;
+		gamePos[player].y = clientY - event.target.offsetTop;
+    
+    connection.send("playerPosition", player, clientX, clientY);
+	}
 
   onMount(async () => {
     await start();
@@ -119,6 +139,16 @@ connection.on("Broadcast", (data, b, c) => {
 </style>
 
 <main>
+
+  <h2>Player One</h2>
+  <div class="jumbotron" data-player="player1" style="width:640px;height:400px;" on:mousemove={handleMousemove}>
+    {gamePos['player1'].x} : {gamePos['player1'].y}
+  </div>
+  
+    <h2>Player Two</h2>
+  <div class="jumbotron" data-player="player2" style="width:640px;height:400px;" on:mousemove={handleMousemove}>
+    {gamePos['player2'].x} : {gamePos['player2'].y}
+  </div>
 
   <div class="jumbotron">
     <h2>Allå, allå</h2>
