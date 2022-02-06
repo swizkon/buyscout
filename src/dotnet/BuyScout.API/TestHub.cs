@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
@@ -19,11 +20,17 @@ namespace BuyScout.API
         {
             await Clients.All.PlayerPosition(player, x, y);
         }
-        
+
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "All Connected Users");
             await base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            Console.WriteLine(exception?.Message);
+            return base.OnDisconnectedAsync(exception);
         }
     }
 }

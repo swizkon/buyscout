@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { Router, Link, Route } from "svelte-routing";
   import { fade, fly } from "svelte/transition";
   import { flip } from "svelte/animate";
   import { HubConnectionBuilder } from "@microsoft/signalr";
@@ -17,7 +18,6 @@
     nextUp = {
       title: data,
       description: b,
-      nextOccurrence: c,
     };
   });
 
@@ -25,7 +25,6 @@
     const item = {
       title: title,
       description: list,
-      nextOccurrence: timestamp,
       itemId: itemId,
     };
     items = [item, ...items];
@@ -92,8 +91,6 @@
   {#if listId != ""}
     <h1 id="next-title">{listId}</h1>
     <h2>DESC</h2>
-    <h3>LALALALA</h3>
-
     <h3>Add items:</h3>
 
     <input bind:value={itemTitle} />
@@ -102,10 +99,10 @@
     <div>
       {#each items as c, i (c)}
         <div animate:flip in:fade out:fly={{ x: 10 }}>
+          <hr/>
           <h3>
             {c.title}
             {c.description}
-            {c.nextOccurrence}
           </h3>
           <button on:click={() => remove(i)}>remove</button>
         </div>
@@ -132,6 +129,16 @@
     font-size: 4em;
     font-weight: 100;
   }
+  
+  /*
+  h1 {
+    color: #ff3e00;
+    text-transform: uppercase;
+    font-size: 4em;
+    font-weight: 100;
+    text-shadow: 3px 3px 0em #000;
+  }
+  */
 
   @media (min-width: 640px) {
     main {

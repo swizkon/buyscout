@@ -60,15 +60,12 @@ namespace BuyScout.API.Controllers
                 $"Called at {DateTime.Now}"
             });
 
-            foreach (var c in title.ToCharArray())
+            await _bus.Publish(new AddItemToListCommand
             {
-                await _bus.Publish(new AddItemToListCommand
-                {
-                    ListId = listId,
-                    Title = c.ToString(),
-                    Description = "Description"
-                });
-            }
+                ListId = listId,
+                Title = title,
+                Description = "Description"
+            });
 
             return Ok();
         }
