@@ -105,7 +105,7 @@ namespace BuyScout.API
                 {
                     cfg.Host("", configurator =>
                     {
-                        configurator.Password("guest");
+                        configurator.Username("guest");
                         configurator.Password("guest");
                     });
 
