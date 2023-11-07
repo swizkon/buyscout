@@ -25,4 +25,16 @@ namespace BuyScout.Contracts
         public DateTime UtcTimestamp { get; set; }
         public string Name { get; set; }
     }
+
+    public record CheckOrderStatus
+    {
+        public string OrderId { get; init; }
+    }
+
+    public record OrderStatusResult
+    {
+        public string OrderId { get; init; }
+        public DateTime Timestamp { get; init; }
+        public string Status { get; init; }
+    }
 }

@@ -1,13 +1,17 @@
+using System;
 using System.Threading.Tasks;
 using BuyScout.Contracts;
 using MassTransit;
+using MassTransit.Riders;
+using MassTransit.Util;
 using Microsoft.Extensions.Logging;
 
 namespace BuyScout.Processors
 {
     public class BlaBlaSomeHandler :
         IConsumer<AddItemToListCommand>,
-        IConsumer<SystemTickEvent>
+        IConsumer<SystemTickEvent>,
+        IConsumer<CheckOrderStatus>
     {
         private readonly ILogger<BlaBlaSomeHandler> _logger;
 
@@ -30,6 +34,23 @@ namespace BuyScout.Processors
             _logger.LogInformation("{MessageType}:{CorrelationId} at {Timestamp}", message.GetType().Name,
                 context.CorrelationId, message.UtcTimestamp);
             return Task.CompletedTask;
+        }
+
+        public async Task Consume(ConsumeContext<CheckOrderStatus> context)
+        {
+            var timestamp = DateTime.UtcNow;
+
+            if (timestamp.Second % 2 == 0)
+            {
+                throw new Exception("Cant use even seconds");
+            }
+
+            await context.RespondAsync<OrderStatusResult>(new
+            {
+                context.Message.OrderId,
+                Timestamp = timestamp,
+                Status = "Alles gut"
+            });
         }
     }
 }

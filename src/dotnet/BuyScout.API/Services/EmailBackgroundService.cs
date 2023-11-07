@@ -64,8 +64,7 @@ namespace BuyScout.API.Services
                         context.CorrelationId = Guid.NewGuid();
                         // context.
                     }, cancellationToken);
-
-
+                    
                     await _bus.Publish(new SystemHeartbeatEvent
                     {
                         Name = typeof(Startup).Namespace,

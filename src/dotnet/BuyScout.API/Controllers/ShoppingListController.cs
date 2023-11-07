@@ -70,6 +70,17 @@ namespace BuyScout.API.Controllers
             return Ok();
         }
 
+        [HttpGet("{listId}")]
+        public async Task<IActionResult> GetItem([FromRoute] string listId)
+        {
+            var resp = await _bus.Request<CheckOrderStatus, OrderStatusResult>(new CheckOrderStatus
+            {
+                OrderId = "Description"
+            }, timeout: RequestTimeout.After(ms: 1000));
+
+            return Ok(resp);
+        }
+
         [HttpDelete("{listId}/{itemId}/{reason}")]
         public async Task<IActionResult> RemoveItem(
             [FromRoute] string listId,
