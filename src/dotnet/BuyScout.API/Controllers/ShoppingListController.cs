@@ -59,7 +59,7 @@ namespace BuyScout.API.Controllers
                 Guid.NewGuid().ToString(),
                 $"Called at {DateTime.Now}"
             });
-
+            
             await _bus.Publish(new AddItemToListCommand
             {
                 ListId = listId,
